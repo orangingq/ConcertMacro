@@ -20,9 +20,9 @@ public class mainGUI extends JFrame{
 	private JButton delListBtn;
 	private JButton colorRcgBtn;
 	private JButton spcfPntBtn;
-	private JList<String> list;
-	private JScrollPane scroll;
-	private dataList dataList = new dataList();
+	private static JList<String> list;
+	private static JScrollPane scroll;
+	private static dataList dataList = new dataList();
 	private String[] strDataList = new String[100];
 	private Container cPane;
 	
@@ -73,4 +73,7 @@ public class mainGUI extends JFrame{
 		});
 	}
 	
+	public static void addOnDataList(dataType data) {
+		dataList.add(data);
+	}
 }

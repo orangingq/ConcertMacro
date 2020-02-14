@@ -8,13 +8,13 @@ public class dataType {
 	 *  	One is selecting color and range of exploration,
 	 *  	the other is selecting a point without color info.
 	 */
-	private Color color;
+	private Color color = null;
 	/*range:can be a point(point[1]) or range of points(point[2]).
 	 * 		In the case of range, first point is up-left side point of the rectangle range,
 	 * 		and the second point is down-right side point of the range. 
 	 */
-	private point[] range;
-	private point point;
+	private point[] range = null;
+	private point point = null;
 	
 	public dataType() {};
 	public dataType(Color color, point[] range) {

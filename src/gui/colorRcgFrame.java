@@ -10,7 +10,6 @@ import java.awt.PointerInfo;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileNotFoundException;
@@ -36,9 +35,11 @@ public class colorRcgFrame extends JFrame {
 	JButton rangeChgBtn;
 	JButton rangesvBtn;
 	JLabel rangeLbl;
+	JButton saveBtn;
 	FullScreenCapture screencapture;
 	dataType data;
 	Color pickedColor;
+	point[] p;
 	
 	public colorRcgFrame() throws AWTException{
 		setSize(500, 500);
@@ -50,7 +51,7 @@ public class colorRcgFrame extends JFrame {
 		lbl = new JLabel("범위 내 색인식 추가");
 		cPane.add(lbl, "North");
 		colorBox = new JPanel();
-		layoutBox = new JPanel(new GridLayout(2,3));
+		layoutBox = new JPanel(new GridLayout(3,3));
 		clrChgBtn = new JButton("색 지정"); //색 지정 버튼 설정
 		clrChgBtn.addActionListener(new clrChgBtnListener());
 		rangeChgBtn = new JButton("범위 지정"); //범위 지정 버튼 설정
@@ -60,16 +61,34 @@ public class colorRcgFrame extends JFrame {
 		clrsvBtn.addActionListener(new clrsvBtnListener());
 		rangesvBtn = new JButton("범위 저장");
 		rangesvBtn.setEnabled(false);
+		rangesvBtn.addActionListener(new rangesvBtnListener());
+		rangeLbl = new JLabel();
+		saveBtn = new JButton("저장하기");
+		saveBtn.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//TODO data가 다 형성되지 않은 채 버튼이 눌렸을 경우 알림창 띄우기 
+				saveBtn.setEnabled(false);
+				(new mainGUI()).addOnDataList(data);
+				//TODO mainGUI에 data를 전달해서 리스트에 띄우기 & 리스트 보여주기
+			}
+		});
+		if(!saveBtn.isEnabled()) {
+			System.out.println("saveButton is clicked");
+			System.exit(0);
+		}
+		/*layoutBox에 추가*/
 		layoutBox.add(clrChgBtn);
 		layoutBox.add(clrsvBtn);
 		layoutBox.add(colorBox);
 		layoutBox.add(rangeChgBtn);
 		layoutBox.add(rangesvBtn);
-	//	layoutBox.add(rangeLbl);
+		layoutBox.add(rangeLbl);
+		layoutBox.add(saveBtn);
 		cPane.add(layoutBox, "Center");
 		setVisible(true);
 		data = new dataType();
-		
+		screencapture = new FullScreenCapture();
 		
 	}
 	
@@ -81,112 +100,118 @@ public class colorRcgFrame extends JFrame {
 		IFrame.pack();
 		IFrame.setVisible(true);
 		IFrame.setDefaultCloseOperation(IFrame.DISPOSE_ON_CLOSE);;
-		System.out.println("file is opened.");
-		lbl.addMouseListener(new colorPickListener());
+		System.out.println("file is opened.. path: "+ screencapture.getFilePath());
+		lbl.addMouseListener(new pickListener());
 	}
 	
-	public class clrChgBtnListener implements ActionListener {
+	private class clrChgBtnListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e){
 			clrsvBtn.setEnabled(true);
 			clrChgBtn.setEnabled(false);
-			System.out.println("mouse is clicked.");
+			System.out.println("mouse is clicked..ColorChangeButton");
 			try {
-				screencapture = new FullScreenCapture();
 				openImageFile();
-				colorBox.setBackground(mousePointingColor());
-				System.out.println("color is sent");
-			} catch (AWTException | FileNotFoundException e1) {
-				// TODO Auto-generated catch block
+			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
 		}
 
 	}
 	
-	class clrsvBtnListener implements ActionListener {
+	private class clrsvBtnListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			clrsvBtn.setEnabled(false);
 			clrChgBtn.setEnabled(true);		
-			//data.setColor(pickedColor);
+			data.setColor(pickedColor);
+			System.out.println("data..Color is sent. ");
 		}
 	}
 	
-	class rangeChgBtnListener implements ActionListener {
+	private class rangeChgBtnListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			rangesvBtn.setEnabled(true);
 			rangeChgBtn.setEnabled(false);
-			System.out.println("mouse is clicked.");
-			addMouseListener(new MouseAdapter() {
-				point p1;
-				point[] p2;
-				@Override
-				public void mousePressed(MouseEvent m) {
-					p2[0] = new point(m.getX(), m.getY());					
-				}
-				@Override
-				public void mouseReleased(MouseEvent m) {
-					p2[1] = new point(m.getX(), m.getY());
-					rangeLbl.setText(p2.toString());
-				}
-				@Override
-				public void mouseClicked(MouseEvent m) {
-					p1 = new point(m.getX(), m.getY());
-					rangeLbl.setText(p1.toString());
-				}
-			});
+			System.out.println("mouse is clicked..RangeChangeButton");
+			try {
+				openImageFile();
+			} catch (FileNotFoundException e1) {
+				e1.printStackTrace();
+			}
+//			addMouseListener(new MouseAdapter() {
+//				point p1;
+//				point[] p2;
+//				@Override
+//				public void mousePressed(MouseEvent m) {
+//					p2[0] = new point(m.getX(), m.getY());					
+//				}
+//				@Override
+//				public void mouseReleased(MouseEvent m) {
+//					p2[1] = new point(m.getX(), m.getY());
+//					rangeLbl.setText(p2.toString());
+//				}
+//				@Override
+//				public void mouseClicked(MouseEvent m) {
+//					p1 = new point(m.getX(), m.getY());
+//					rangeLbl.setText(p1.toString());
+//				}
+//			});
 		}
 	}	
+	
+	private class rangesvBtnListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			rangesvBtn.setEnabled(false);
+			rangeChgBtn.setEnabled(true);
+			data.setRange(p);
+			System.out.println("data.. range is sent. p: " + p[0].toString());
+		}
+	}
 
-	class colorPickListener implements MouseListener {
+	private class pickListener implements MouseListener {
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			try {
-				colorBox.setBackground(mousePointingColor());
+			if(clrsvBtn.isEnabled()) try {
+				pickedColor = mousePointingColor();
+				colorBox.setBackground(pickedColor);
 			} catch (AWTException e1) {
-				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 		}
-
 		@Override
 		public void mousePressed(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+			if(rangesvBtn.isEnabled()) {
+				System.out.println("mousePressed");
+				p = new point[2];
+				p[0] = new point(e.getPoint());
+			}
 		}
-
 		@Override
 		public void mouseReleased(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
+			if(rangesvBtn.isEnabled()) {
+				System.out.println("mouseReleased");
+				p[1] = new point(e.getPoint());
+				rangeLbl.setText(p[0].toString()+" ~ " + p[1].toString()); 
+			}
 		}
-
 		@Override
-		public void mouseEntered(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
-
+		public void mouseEntered(MouseEvent e) {}
 		@Override
-		public void mouseExited(MouseEvent e) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void mouseExited(MouseEvent e) {}
 	}
 	
 	protected static Color mousePointingColor() throws AWTException{
 		Robot robot = new Robot();
 		PointerInfo a = MouseInfo.getPointerInfo();
 		point b = new point(a.getLocation());
-		colorBox.setBackground(robot.getPixelColor(b.getIntX(), b.getIntY()));
-		Color rgb = robot.getPixelColor(b.getIntX(), b.getIntY());
-		return rgb;
+		return robot.getPixelColor(b.getIntX(), b.getIntY());
 	}
-	
-	public static void main(String args[]) throws AWTException {
-		colorRcgFrame c = new colorRcgFrame();
-		c.setEnabled(true);
-	}
+
+//	public static void main(String args[]) throws AWTException {
+//		colorRcgFrame c = new colorRcgFrame();
+//		c.setEnabled(true);
+//	}
 }

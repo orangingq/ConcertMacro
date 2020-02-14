@@ -13,9 +13,14 @@ public class dataList implements Iterable {
 	public dataList() {
 		size = 0;
 	}
-	public dataList(dataType dt) {
-		list.add(dt);
+	
+	public void add(dataType data) {
+		list.add(data);
 		size ++;
+	}
+	
+	public void remove(int index) {
+		if(size > index && index >= 0) list.remove(index);
 	}
 	
 	public int getSize() {return size;}
