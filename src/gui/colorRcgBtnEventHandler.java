@@ -1,11 +1,17 @@
 package gui;
 
+import java.awt.AWTException;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class colorRcgBtnEventHandler implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
-		(new colorRcgFrame()).setVisible(true);
+		try {
+			(new colorRcgFrame()).setVisible(true);
+		} catch (AWTException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
 		
 	}
 }
