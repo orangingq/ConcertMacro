@@ -58,13 +58,12 @@ public class spcfPntFrame extends JFrame{
 		saveBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO data가 다 형성되지 않은 채 버튼이 눌렸을 경우 알림창 띄우기 
 				if(data.getPoint()==null)
 					(new alertDialog("위치를 지정하세요.")).setVisible(true);
 				else {
 					saveBtn.setEnabled(false);
 					(new mainGUI()).addData(data);
-					//TODO mainGUI에 data를 전달해서 리스트에 띄우기 & 리스트 보여주기
+					screencapture.getFile().deleteOnExit();
 					dispose();
 				}
 			}

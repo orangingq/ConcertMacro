@@ -69,7 +69,6 @@ public class colorRcgFrame extends JFrame {
 		saveBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//TODO data가 다 형성되지 않은 채 버튼이 눌렸을 경우 알림창 띄우기 
 				if(data.getColor()==null)
 					(new alertDialog("색을 지정하세요.")).setVisible(true);
 				else if(data.getRange()==null)
