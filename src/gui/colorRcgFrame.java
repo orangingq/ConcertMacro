@@ -77,7 +77,7 @@ public class colorRcgFrame extends JFrame {
 				else {
 					saveBtn.setEnabled(false);
 					(new mainGUI()).addData(data);
-					//TODO mainGUI에 data를 전달해서 리스트에 띄우기 & 리스트 보여주기
+					screencapture.getFile().deleteOnExit();
 					dispose();
 				}
 			}
