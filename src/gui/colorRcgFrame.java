@@ -14,32 +14,34 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.FileNotFoundException;
 
-import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import MainSrc.FullScreenCapture;
+import MainSrc.alertDialog;
 import MainSrc.dataType;
+import MainSrc.openImageFile;
 import MainSrc.point;
 
 public class colorRcgFrame extends JFrame {
-	Container cPane;
-	JLabel lbl;
-	static JPanel colorBox;
-	JPanel capturedImageBox;
-	JPanel layoutBox;
-	JButton clrChgBtn;
-	JButton clrsvBtn;
-	JButton rangeChgBtn;
-	JButton rangesvBtn;
-	JLabel rangeLbl;
-	JButton saveBtn;
-	FullScreenCapture screencapture;
-	dataType data;
-	Color pickedColor;
-	point[] p;
+	private Container cPane;
+	private JLabel lbl;
+	private static JPanel colorBox;
+	private JPanel capturedImageBox;
+	private JPanel layoutBox;
+	private JButton clrChgBtn;
+	private JButton clrsvBtn;
+	private JButton rangeChgBtn;
+	private JButton rangesvBtn;
+	private JLabel rangeLbl;
+	private JButton saveBtn;
+	private FullScreenCapture screencapture;
+	private dataType data;
+	private Color pickedColor;
+	private point[] p;
+	private openImageFile OIF;
 	
 	public colorRcgFrame() throws AWTException{
 		setSize(500, 500);
@@ -68,15 +70,18 @@ public class colorRcgFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				//TODO data가 다 형성되지 않은 채 버튼이 눌렸을 경우 알림창 띄우기 
-				saveBtn.setEnabled(false);
-				(new mainGUI()).addOnDataList(data);
-				//TODO mainGUI에 data를 전달해서 리스트에 띄우기 & 리스트 보여주기
+				if(data.getColor()==null)
+					(new alertDialog("색을 지정하세요.")).setVisible(true);
+				else if(data.getRange()==null)
+					(new alertDialog("범위를 지정하세요.")).setVisible(true);
+				else {
+					saveBtn.setEnabled(false);
+					(new mainGUI()).addData(data);
+					//TODO mainGUI에 data를 전달해서 리스트에 띄우기 & 리스트 보여주기
+					dispose();
+				}
 			}
 		});
-		if(!saveBtn.isEnabled()) {
-			System.out.println("saveButton is clicked");
-			System.exit(0);
-		}
 		/*layoutBox에 추가*/
 		layoutBox.add(clrChgBtn);
 		layoutBox.add(clrsvBtn);
@@ -88,20 +93,9 @@ public class colorRcgFrame extends JFrame {
 		cPane.add(layoutBox, "Center");
 		setVisible(true);
 		data = new dataType();
+		data.setClrOrPnt(true);
 		screencapture = new FullScreenCapture();
 		
-	}
-	
-	public void openImageFile() throws FileNotFoundException {
-		JFrame IFrame = new JFrame("캡처 화면-색을 선택하세요.");
-		ImageIcon image = new ImageIcon(screencapture.getFilePath());
-		JLabel lbl = new JLabel(image);
-		IFrame.add(lbl);
-		IFrame.pack();
-		IFrame.setVisible(true);
-		IFrame.setDefaultCloseOperation(IFrame.DISPOSE_ON_CLOSE);;
-		System.out.println("file is opened.. path: "+ screencapture.getFilePath());
-		lbl.addMouseListener(new pickListener());
 	}
 	
 	private class clrChgBtnListener implements ActionListener {
@@ -111,7 +105,8 @@ public class colorRcgFrame extends JFrame {
 			clrChgBtn.setEnabled(false);
 			System.out.println("mouse is clicked..ColorChangeButton");
 			try {
-				openImageFile();
+				OIF= new openImageFile(screencapture, (MouseListener)(new pickListener()));
+				OIF.setFrameTxt("색을 클릭하세요.");
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
@@ -136,28 +131,11 @@ public class colorRcgFrame extends JFrame {
 			rangeChgBtn.setEnabled(false);
 			System.out.println("mouse is clicked..RangeChangeButton");
 			try {
-				openImageFile();
+				OIF= new openImageFile(screencapture, (MouseListener)(new pickListener()));
+				OIF.setFrameTxt("범위를 드래그하세요.");
 			} catch (FileNotFoundException e1) {
 				e1.printStackTrace();
 			}
-//			addMouseListener(new MouseAdapter() {
-//				point p1;
-//				point[] p2;
-//				@Override
-//				public void mousePressed(MouseEvent m) {
-//					p2[0] = new point(m.getX(), m.getY());					
-//				}
-//				@Override
-//				public void mouseReleased(MouseEvent m) {
-//					p2[1] = new point(m.getX(), m.getY());
-//					rangeLbl.setText(p2.toString());
-//				}
-//				@Override
-//				public void mouseClicked(MouseEvent m) {
-//					p1 = new point(m.getX(), m.getY());
-//					rangeLbl.setText(p1.toString());
-//				}
-//			});
 		}
 	}	
 	
@@ -209,9 +187,4 @@ public class colorRcgFrame extends JFrame {
 		point b = new point(a.getLocation());
 		return robot.getPixelColor(b.getIntX(), b.getIntY());
 	}
-
-//	public static void main(String args[]) throws AWTException {
-//		colorRcgFrame c = new colorRcgFrame();
-//		c.setEnabled(true);
-//	}
 }

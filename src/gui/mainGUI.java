@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JList;
@@ -21,9 +22,9 @@ public class mainGUI extends JFrame{
 	private JButton colorRcgBtn;
 	private JButton spcfPntBtn;
 	private static JList<String> list;
+	private static DefaultListModel<String> model = new DefaultListModel<>();
 	private static JScrollPane scroll;
 	private static dataList dataList = new dataList();
-	private String[] strDataList = new String[100];
 	private Container cPane;
 	
 	public mainGUI() {
@@ -44,7 +45,7 @@ public class mainGUI extends JFrame{
 		cPane.add(colorRcgBtn);
 		cPane.add(spcfPntBtn);
 		
-		list = new JList<String>(dataList.strDataList());
+		list = new JList(model);
 		list.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		scroll = new JScrollPane(list);
 		scroll.setPreferredSize(new Dimension(300, 300));
@@ -73,7 +74,15 @@ public class mainGUI extends JFrame{
 		});
 	}
 	
-	public static void addOnDataList(dataType data) {
+//	public static void addAllDataList(dataList dL){
+//		dataList.addAll(dL);
+//		strDataList = dataList.strDataList();
+//		list = new JList(strDataList);
+//		System.out.println("add Data on strDataList : " + strDataList.toString());
+//	}
+	public static void addData(dataType data) {
 		dataList.add(data);
+		model.addElement(data.toString());
+		System.out.println("added Data on model." + model.toString());
 	}
 }

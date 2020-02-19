@@ -8,23 +8,35 @@ public class dataType {
 	 *  	One is selecting color and range of exploration,
 	 *  	the other is selecting a point without color info.
 	 */
-	private Color color = null;
+	private Color color;
 	/*range:can be a point(point[1]) or range of points(point[2]).
 	 * 		In the case of range, first point is up-left side point of the rectangle range,
 	 * 		and the second point is down-right side point of the range. 
 	 */
-	private point[] range = null;
-	private point point = null;
+	private point[] range;
+	private point point;
 	
-	public dataType() {};
+	public dataType() {
+		clrOrPnt = true;
+		color = null;
+		range = null;
+		point = null;
+	};
 	public dataType(Color color, point[] range) {
 		this.color = color;
 		this.range = range;
+		this.point = null;
 		clrOrPnt = true;
 	}
 	public dataType(point point) {
 		clrOrPnt = false;
+		this.color = null;
+		this.range = null;
 		this.point = point;
+	}
+	
+	public void setClrOrPnt(boolean isclr) {
+		clrOrPnt = isclr;
 	}
 	
 	public void setColor(Color color) {
@@ -61,7 +73,7 @@ public class dataType {
 	public String toString() {
 		String str;
 		if(clrOrPnt == true) 
-			str = color.toString() + "\t " + range[0].toString() + "~" + range[1].toString() + "\t x";
+			str = "[r="+ color.getRed()+",g="+color.getGreen()+",b="+color.getBlue()+"]\t " + range[0].toString() + "~" + range[1].toString() + "\t x";
 		else
 			str = "x\t x\t " + point.toString(); 
 		return str;

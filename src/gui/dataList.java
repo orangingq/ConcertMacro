@@ -19,11 +19,18 @@ public class dataList implements Iterable {
 		size ++;
 	}
 	
+	public void addAll(dataList dL) {
+		for(dataType dT:dL.getList()) list.add(dT);
+		
+	}
+	
 	public void remove(int index) {
 		if(size > index && index >= 0) list.remove(index);
 	}
 	
 	public int getSize() {return size;}
+	
+	public LinkedList<dataType> getList() { return list; }
 
 	@Override
 	public Iterator iterator() {
