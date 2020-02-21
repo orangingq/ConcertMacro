@@ -3,7 +3,8 @@ package gui;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.FlowLayout;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -36,6 +37,8 @@ public class spcfPntFrame extends JFrame{
 	private Color pickedColor;
 	private point p;
 	private openImageFile OIF;
+	private GridBagLayout gbl = new GridBagLayout();
+	private GridBagConstraints[] gbc = new GridBagConstraints[4];
 	
 	public spcfPntFrame() {
 		setSize(500, 500);
@@ -46,8 +49,7 @@ public class spcfPntFrame extends JFrame{
 		cPane.setLayout(new BorderLayout());
 		lbl = new JLabel("지정 위치 추가");
 		cPane.add(lbl, "North");
-		layoutBox = new JPanel(new GridLayout(2,3));
-		
+		layoutBox = new JPanel(new GridLayout(3,2));
 		pointChgBtn = new JButton("위치 지정"); //위치 지정 버튼 설정
 		pointChgBtn.addActionListener(new pointChgBtnListener());
 		pointsvBtn = new JButton("위치 저장");
