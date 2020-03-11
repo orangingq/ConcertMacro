@@ -171,6 +171,16 @@ public class colorRcgFrame extends JFrame {
 			if(rangesvBtn.isEnabled()) {
 				System.out.println("mouseReleased");
 				p[1] = new point(e.getPoint());
+				if(p[0].getX()>p[1].getX()) {
+					double tmp = p[0].getX();
+					p[0].setX(p[1].getX());
+					p[1].setX(tmp);
+				}
+				if(p[0].getY()>p[1].getY()) {
+					double tmp = p[0].getY();
+					p[0].setY(p[1].getY());
+					p[1].setY(tmp);
+				}
 				rangeLbl.setText(p[0].toString()+" ~ " + p[1].toString()); 
 			}
 		}

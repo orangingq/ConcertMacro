@@ -17,6 +17,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 
+import MainSrc.alertDialog;
 import MainSrc.dataType;
 
 public class mainGUI extends JFrame{
@@ -29,9 +30,13 @@ public class mainGUI extends JFrame{
 	private static JScrollPane scroll;
 	private static dataList dataList = new dataList();
 	private Container cPane;
+	//public static JTextField monthTF;
+	//public static JTextField dayTF;
 	public static JTextField hourTF;
 	public static JTextField minTF;
 	public static JTextField secondTF;
+	//private JLabel monthLbl;
+	//private JLabel dayLbl;
 	private JLabel hourLbl;
 	private JLabel minLbl;
 	private JLabel secondLbl;
@@ -64,6 +69,10 @@ public class mainGUI extends JFrame{
 		list.setVisibleRowCount(10);
 		cPane.add(scroll);
 		
+		//monthTF = new JTextField(3);
+		//monthLbl = new JLabel("월 ");
+		//dayTF = new JTextField(3);
+		//dayLbl = new JLabel("일 ");
 		hourTF = new JTextField(3);
 		hourLbl = new JLabel("시 ");
 		minTF = new JTextField(3);
@@ -71,7 +80,12 @@ public class mainGUI extends JFrame{
 		secondTF = new JTextField(3);
 		secondLbl = new JLabel("초 ");
 		runBtn = new JButton("실행");
+		runBtn.addActionListener(new timeSetEventHandler(this));
 		timeSetLayout = new JPanel(new FlowLayout());
+		//timeSetLayout.add(monthTF);
+		//timeSetLayout.add(monthLbl);
+		//timeSetLayout.add(dayTF);
+		//timeSetLayout.add(dayLbl);
 		timeSetLayout.add(hourTF);
 		timeSetLayout.add(hourLbl);
 		timeSetLayout.add(minTF);
@@ -80,7 +94,6 @@ public class mainGUI extends JFrame{
 		timeSetLayout.add(secondLbl);
 		timeSetLayout.add(runBtn);
 		cPane.add(timeSetLayout);
-		runBtn.addActionListener(new timeSetEventHandler());
 	}
 	
 	public static void addData(dataType data) {
@@ -101,15 +114,22 @@ public class mainGUI extends JFrame{
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static long timeUntil() {
+		System.out.println("Time text: "+hourTF.getText()+minTF.getText()+secondTF.getText());
+		if (hourTF.getText().isEmpty() || minTF.getText().isEmpty() || secondTF.getText().isEmpty())
+			return -1;
 		Date now = new Date();
-		Calendar setTime = Calendar.getInstance();
-		setTime.set(Calendar.HOUR, Integer.parseInt(hourTF.getText()));
-		setTime.set(Calendar.MINUTE, Integer.parseInt(minTF.getText()));
-		setTime.set(Calendar.SECOND, Integer.parseInt(secondTF.getText()));
-		setTime.set(Calendar.MILLISECOND, 0);
-		Date until = setTime.getTime();
+		Date until = new Date();
+		
+		until.setHours(Integer.parseInt(hourTF.getText()));
+		until.setMinutes(Integer.parseInt(minTF.getText()));
+		until.setSeconds(Integer.parseInt(secondTF.getText()));
+		System.out.println("now= "+ now.getHours() +":"+ now.getMinutes()+":"+now.getSeconds());
+		System.out.println("until= " + until.getHours()+":"+until.getMinutes()+":"+until.getSeconds());
+
 		long sleep = until.getTime() - now.getTime();
+		System.out.println("sleep = " + sleep);
 		return sleep;
 	}
 	
