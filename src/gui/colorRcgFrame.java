@@ -12,6 +12,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.FileNotFoundException;
 
 import javax.swing.JButton;
@@ -46,7 +49,7 @@ public class colorRcgFrame extends JFrame {
 	public colorRcgFrame(mainGUI main) throws AWTException{
 		setSize(500, 500);
 		setTitle("ConcertMacro_click by color");
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		this.addWindowListener((WindowListener) new JFrameWindowClosingEventHandler());
 		
 		cPane = getContentPane();
 		cPane.setLayout(new BorderLayout());
@@ -95,6 +98,14 @@ public class colorRcgFrame extends JFrame {
 		data.setClrOrPnt(true);
 		screencapture = new FullScreenCapture();
 		
+	}
+	
+	private class JFrameWindowClosingEventHandler extends WindowAdapter {
+		public void windowClosing(WindowEvent e) {
+			JFrame frame = (JFrame)e.getWindow();
+			frame.dispose();
+			screencapture.getFile().delete();
+		}
 	}
 	
 	private class clrChgBtnListener implements ActionListener {
