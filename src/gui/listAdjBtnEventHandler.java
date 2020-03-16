@@ -4,7 +4,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class listAdjBtnEventHandler implements ActionListener{
+	private mainGUI main;
+	public listAdjBtnEventHandler(mainGUI main) {
+		this.main = main;
+	}
+	
 	public void actionPerformed(ActionEvent e) {
-		(new listAdjFrame()).setVisible(true);
+		(new listAdjFrame(main)).setVisible(true);
 	}
 }

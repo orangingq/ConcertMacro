@@ -1,9 +1,13 @@
 package gui;
+import java.awt.AWTException;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.util.Calendar;
+import java.awt.Robot;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
 import java.util.Date;
 
 import javax.swing.BorderFactory;
@@ -19,22 +23,23 @@ import javax.swing.ListSelectionModel;
 
 import MainSrc.alertDialog;
 import MainSrc.dataType;
+import MainSrc.point;
 
 public class mainGUI extends JFrame{
 	//FIELDS
 	private JButton listAdjBtn;
 	private JButton colorRcgBtn;
 	private JButton spcfPntBtn;
-	private static JList<String> list;
-	private static DefaultListModel<String> model = new DefaultListModel<>();
-	private static JScrollPane scroll;
-	private static dataList dataList = new dataList();
+	private JList<String> list;
+	private DefaultListModel<String> model = new DefaultListModel<>();
+	private JScrollPane scroll;
+	private dataList dataList = new dataList();
 	private Container cPane;
 	//public static JTextField monthTF;
 	//public static JTextField dayTF;
-	public static JTextField hourTF;
-	public static JTextField minTF;
-	public static JTextField secondTF;
+	private JTextField hourTF;
+	private JTextField minTF;
+	private JTextField secondTF;
 	//private JLabel monthLbl;
 	//private JLabel dayLbl;
 	private JLabel hourLbl;
@@ -51,11 +56,11 @@ public class mainGUI extends JFrame{
 		cPane = getContentPane();
 		cPane.setLayout(new FlowLayout());
 		listAdjBtn = new JButton("리스트 삭제/수정");
-		listAdjBtn.addActionListener(new listAdjBtnEventHandler());
+		listAdjBtn.addActionListener(new listAdjBtnEventHandler(this));
 		colorRcgBtn = new JButton("범위 내 색인식 추가");
-		colorRcgBtn.addActionListener(new colorRcgBtnEventHandler());
+		colorRcgBtn.addActionListener(new colorRcgBtnEventHandler(this));
 		spcfPntBtn = new JButton("지정 위치 추가");
-		spcfPntBtn.addActionListener(new spcfPntBtnEventHandler());		
+		spcfPntBtn.addActionListener(new spcfPntBtnEventHandler(this));		
 		
 		cPane.add(listAdjBtn);
 		cPane.add(colorRcgBtn);
@@ -72,7 +77,7 @@ public class mainGUI extends JFrame{
 		//monthTF = new JTextField(3);
 		//monthLbl = new JLabel("월 ");
 		//dayTF = new JTextField(3);
-		//dayLbl = new JLabel("일 ");
+		//dayLbl = new JLabel("일 ");		
 		hourTF = new JTextField(3);
 		hourLbl = new JLabel("시 ");
 		minTF = new JTextField(3);
@@ -80,7 +85,7 @@ public class mainGUI extends JFrame{
 		secondTF = new JTextField(3);
 		secondLbl = new JLabel("초 ");
 		runBtn = new JButton("실행");
-		runBtn.addActionListener(new timeSetEventHandler(this));
+		runBtn.addActionListener(new timeSetEventHandler());
 		timeSetLayout = new JPanel(new FlowLayout());
 		//timeSetLayout.add(monthTF);
 		//timeSetLayout.add(monthLbl);
@@ -96,17 +101,17 @@ public class mainGUI extends JFrame{
 		cPane.add(timeSetLayout);
 	}
 	
-	public static void addData(dataType data) {
+	public void addData(dataType data) {
 		dataList.add(data);
 		model.addElement(data.toString());
 		System.out.println("added Data on model." + model.toString());
 	}
 	
-	public static dataList getDataList() {
+	public dataList getDataList() {
 		return dataList.clone();
 	}
 	
-	public static void setDataList(dataList dL) {
+	public void setDataList(dataList dL) {
 		dataList = dL.clone();
 		model.clear();
 		for(int i=0; i<dataList.getSize(); i++) {
@@ -114,24 +119,61 @@ public class mainGUI extends JFrame{
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
-	public static long timeUntil() {
-		System.out.println("Time text: "+hourTF.getText()+minTF.getText()+secondTF.getText());
-		if (hourTF.getText().isEmpty() || minTF.getText().isEmpty() || secondTF.getText().isEmpty())
-			return -1;
-		Date now = new Date();
-		Date until = new Date();
+	private class timeSetEventHandler implements ActionListener{
+		private Robot robot;
+		private int hour;
+		private int min;
+		private int second;
 		
-		until.setHours(Integer.parseInt(hourTF.getText()));
-		until.setMinutes(Integer.parseInt(minTF.getText()));
-		until.setSeconds(Integer.parseInt(secondTF.getText()));
-		System.out.println("now= "+ now.getHours() +":"+ now.getMinutes()+":"+now.getSeconds());
-		System.out.println("until= " + until.getHours()+":"+until.getMinutes()+":"+until.getSeconds());
-
-		long sleep = until.getTime() - now.getTime();
-		System.out.println("sleep = " + sleep);
-		return sleep;
+		public void actionPerformed(ActionEvent e) {
+			try {
+				robot = new Robot();
+			} catch (AWTException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+			hour = Integer.parseInt(hourTF.getText());
+			min = Integer.parseInt(minTF.getText());
+			second = Integer.parseInt(secondTF.getText());
+			
+			timeUntil TU = new timeUntil(hour, min, second);
+			if (TU.calculation() < 0) {
+				alertDialog alert = new alertDialog("실행시간 설정 오류");
+				alert.setVisible(true);
+			}
+			else {
+				try {
+					Thread.sleep(TU.calculation());
+				}catch(InterruptedException e2) {
+					e2.printStackTrace();
+				}
+				
+				System.out.println("wake up!!");
+				
+				for(int i=0; i<dataList.getSize(); i++) {
+					System.out.println("dataList: data_"+i);
+					dataType data = dataList.getDataAt(i);
+						if(data.getClrOrPnt()) {
+							point[] P = new point[2];
+							P = data.getRange();
+							Color color = data.getColor();
+							for(int x=P[0].getIntX(); x<P[1].getIntX(); x++)
+								for(int y=P[0].getIntY(); y<P[1].getIntY(); y++) {
+									if(robot.getPixelColor(x, y)!=color) continue;
+									System.out.println("click mouse at :"+x+", " +y);
+									robot.mouseMove(x, y);
+									robot.mousePress(InputEvent.BUTTON1_MASK);
+									robot.mouseRelease(InputEvent.BUTTON1_MASK);
+								}
+						}
+						else {
+							System.out.println("click mouse at :"+data.getPoint().getIntX()+", " +data.getPoint().getIntX());
+							robot.mouseMove(data.getPoint().getIntX(), data.getPoint().getIntX());
+							robot.mousePress(InputEvent.BUTTON1_MASK);
+							robot.mouseRelease(InputEvent.BUTTON1_MASK);
+						}					
+				}
+			}			
+		}
 	}
-	
-
 }

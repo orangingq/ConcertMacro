@@ -40,7 +40,7 @@ public class spcfPntFrame extends JFrame{
 	private GridBagLayout gbl = new GridBagLayout();
 	private GridBagConstraints[] gbc = new GridBagConstraints[4];
 	
-	public spcfPntFrame() {
+	public spcfPntFrame(mainGUI main) {
 		setSize(500, 500);
 		setTitle("ConcertMacro_click by point");
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
@@ -64,8 +64,8 @@ public class spcfPntFrame extends JFrame{
 					(new alertDialog("위치를 지정하세요.")).setVisible(true);
 				else {
 					saveBtn.setEnabled(false);
-					(new mainGUI()).addData(data);
-					screencapture.getFile().deleteOnExit();
+					main.addData(data);
+					screencapture.getFile().delete();
 					dispose();
 				}
 			}

@@ -33,17 +33,17 @@ public class listAdjFrame extends JFrame{
 	private JButton saveBtn;
 	private Container cPane;
 	private JList<String> list;
-	private static DefaultListModel<String> model = new DefaultListModel<>();
-	private static JScrollPane scroll;
-	private static dataList dataList = new dataList();
-	private static Iterator<dataType> itr;
+	private DefaultListModel<String> model = new DefaultListModel<>();
+	private JScrollPane scroll;
+	private dataList dataList = new dataList();
+	private Iterator<dataType> itr;
 	private JPanel southLayoutBox;
 	private JPanel northLayoutBox;
 	private boolean delBtnClicked = false;
 	private boolean switchBtnClicked = false;
 	private ListSelectionListener listSelecListener;
 	
-	public listAdjFrame() {
+	public listAdjFrame(mainGUI main) {
 		setSize(500, 500);
 		setTitle("ConcertMacro_list Adjustment");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -77,7 +77,7 @@ public class listAdjFrame extends JFrame{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				saveBtn.setEnabled(false);
-				(new mainGUI()).setDataList(dataList);
+				main.setDataList(dataList);
 				dispose();
 			}
 		});

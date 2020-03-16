@@ -28,7 +28,7 @@ import MainSrc.point;
 public class colorRcgFrame extends JFrame {
 	private Container cPane;
 	private JLabel lbl;
-	private static JPanel colorBox;
+	private JPanel colorBox;
 	private JPanel capturedImageBox;
 	private JPanel layoutBox;
 	private JButton clrChgBtn;
@@ -43,7 +43,7 @@ public class colorRcgFrame extends JFrame {
 	private point[] p;
 	private openImageFile OIF;
 	
-	public colorRcgFrame() throws AWTException{
+	public colorRcgFrame(mainGUI main) throws AWTException{
 		setSize(500, 500);
 		setTitle("ConcertMacro_click by color");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -75,8 +75,8 @@ public class colorRcgFrame extends JFrame {
 					(new alertDialog("범위를 지정하세요.")).setVisible(true);
 				else {
 					saveBtn.setEnabled(false);
-					(new mainGUI()).addData(data);
-					screencapture.getFile().deleteOnExit();
+					main.addData(data);
+					screencapture.getFile().delete();
 					dispose();
 				}
 			}
