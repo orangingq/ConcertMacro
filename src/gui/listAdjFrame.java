@@ -87,7 +87,7 @@ public class listAdjFrame extends JFrame{
 		southLayoutBox.add(switchBtn);
 		southLayoutBox.add(saveBtn);
 		cPane.add(southLayoutBox, "South");
-		dataList = (new mainGUI()).getDataList();
+		dataList = main.getDataList();
 		itr = dataList.iterator();
 		model.clear();
 		while(itr.hasNext()) model.addElement(itr.next().toString());

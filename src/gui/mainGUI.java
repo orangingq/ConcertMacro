@@ -1,14 +1,15 @@
 package gui;
 import java.awt.AWTException;
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Robot;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
-import java.util.Date;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
@@ -30,6 +31,7 @@ public class mainGUI extends JFrame{
 	private JButton listAdjBtn;
 	private JButton colorRcgBtn;
 	private JButton spcfPntBtn;
+	private JButton userBtn;
 	private JList<String> list;
 	private DefaultListModel<String> model = new DefaultListModel<>();
 	private JScrollPane scroll;
@@ -46,6 +48,7 @@ public class mainGUI extends JFrame{
 	private JLabel minLbl;
 	private JLabel secondLbl;
 	private JButton runBtn;
+	private JPanel btnLayout;
 	private JPanel timeSetLayout;
 	
 	public mainGUI() {
@@ -54,17 +57,28 @@ public class mainGUI extends JFrame{
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		
 		cPane = getContentPane();
-		cPane.setLayout(new FlowLayout());
+		cPane.setLayout(new BorderLayout());
 		listAdjBtn = new JButton("리스트 삭제/수정");
 		listAdjBtn.addActionListener(new listAdjBtnEventHandler(this));
 		colorRcgBtn = new JButton("범위 내 색인식 추가");
 		colorRcgBtn.addActionListener(new colorRcgBtnEventHandler(this));
 		spcfPntBtn = new JButton("지정 위치 추가");
 		spcfPntBtn.addActionListener(new spcfPntBtnEventHandler(this));		
+		userBtn = new JButton("사용자 클릭 대기 추가");
+		userBtn.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e) {
+            	dataType userdt = new dataType(dataType.USER);
+            	addData(userdt);
+            }
+            
+        });
 		
-		cPane.add(listAdjBtn);
-		cPane.add(colorRcgBtn);
-		cPane.add(spcfPntBtn);
+		btnLayout = new JPanel(new GridLayout(4,1));
+		btnLayout.add(listAdjBtn);
+		btnLayout.add(colorRcgBtn);
+		btnLayout.add(spcfPntBtn);
+		btnLayout.add(userBtn);
+		cPane.add(btnLayout, "East");
 		
 		list = new JList(model);
 		list.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
@@ -72,7 +86,7 @@ public class mainGUI extends JFrame{
 		scroll.setPreferredSize(new Dimension(300, 300));
 		list.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		list.setVisibleRowCount(10);
-		cPane.add(scroll);
+		cPane.add(scroll, "Center");
 		
 		//monthTF = new JTextField(3);
 		//monthLbl = new JLabel("월 ");
@@ -98,7 +112,7 @@ public class mainGUI extends JFrame{
 		timeSetLayout.add(secondTF);
 		timeSetLayout.add(secondLbl);
 		timeSetLayout.add(runBtn);
-		cPane.add(timeSetLayout);
+		cPane.add(timeSetLayout, "South");
 	}
 	
 	public void addData(dataType data) {
@@ -153,22 +167,37 @@ public class mainGUI extends JFrame{
 				for(int i=0; i<dataList.getSize(); i++) {
 					System.out.println("dataList: data_"+i);
 					dataType data = dataList.getDataAt(i);
-						if(data.getClrOrPnt()) {
+					System.out.println(i+": " + data.toString() + " "+ data.getClrOrPnt());
+						if(data.isUser())
+							try {
+								Thread.sleep(1500);
+							} catch (InterruptedException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						else if(data.getClrOrPnt()) {
 							point[] P = new point[2];
 							P = data.getRange();
 							Color color = data.getColor();
-							for(int x=P[0].getIntX(); x<P[1].getIntX(); x++)
-								for(int y=P[0].getIntY(); y<P[1].getIntY(); y++) {
-									if(robot.getPixelColor(x, y)!=color) continue;
-									System.out.println("click mouse at :"+x+", " +y);
+							System.out.println("range: " + P[0].toString() + " color: " + color);
+							for(int y=P[0].getIntY(); y<P[1].getIntY(); y+=5)
+								for(int x=P[0].getIntX(); x<P[1].getIntX(); x+=5) {
+									Color c = robot.getPixelColor(x, y);
+									System.out.println("X,Y: " +x +","+ y + " color: "+c);
+									if(color.getRed()-c.getRed()>5 || color.getRed()-c.getRed()<-5) continue;
+									if(color.getGreen()-c.getGreen()>5 || color.getGreen()-c.getGreen()<-5) continue;
+									if(color.getBlue()-c.getBlue()>5 || color.getBlue()-c.getBlue()<-5) continue;
+									System.out.println("color_click mouse at :"+x+", " +y);
 									robot.mouseMove(x, y);
 									robot.mousePress(InputEvent.BUTTON1_MASK);
 									robot.mouseRelease(InputEvent.BUTTON1_MASK);
+									x=P[1].getIntX();
+									y=P[1].getIntY(); //for 루프 끝내기. 한번 클릭하면 끝.
 								}
 						}
 						else {
-							System.out.println("click mouse at :"+data.getPoint().getIntX()+", " +data.getPoint().getIntX());
-							robot.mouseMove(data.getPoint().getIntX(), data.getPoint().getIntX());
+							System.out.println("point_click mouse at :"+data.getPoint().getIntX()+", " +data.getPoint().getIntY());
+							robot.mouseMove(data.getPoint().getIntX(), data.getPoint().getIntY());
 							robot.mousePress(InputEvent.BUTTON1_MASK);
 							robot.mouseRelease(InputEvent.BUTTON1_MASK);
 						}					
