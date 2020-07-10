@@ -54,8 +54,8 @@ public class mainGUI extends JFrame{
 	public mainGUI() {
 		setSize(500, 500);
 		setTitle("ConcertMacro");
+		// 성혜야 사랑해~ 2020.07.08 대전복합 공차에서, 정솔
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
-		
 		cPane = getContentPane();
 		cPane.setLayout(new BorderLayout());
 		listAdjBtn = new JButton("리스트 삭제/수정");
